@@ -1,0 +1,16 @@
+# Secrets: never commit real env files (PORTKEY_API_KEY lives in .env)
+.env
+*.env
+.env.*
+!.env.example
+!frontend/.env.example
+
+# Environments and dependencies
+.venv/
+node_modules/
+__pycache__/
+*.pyc
+
+# Build output and OS noise
+frontend/dist/
+.DS_Store

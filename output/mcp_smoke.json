@@ -1,0 +1,175 @@
+{
+  "description": "Smoke test of the campus-customs MCP server. Each prompt was sent to Claude Code (headless `claude -p`) with --strict-mcp-config, using a config containing only the campus-customs entry copied from ../.mcp.json, and only the one tool under test allowed. tool_output is the raw MCP result; database_rows was read directly from data/campus_customs_new.db with sqlite3 for comparison.",
+  "database": "data/campus_customs_new.db",
+  "mcp_server": {
+    "name": "campus-customs",
+    "config_file": "../.mcp.json",
+    "connection_status": "connected"
+  },
+  "all_match_database": true,
+  "tests": [
+    {
+      "ticket": 101,
+      "prompt": "Ticket 101: Tauhid Zaman wants 1 Classic Bulldog Tee, SKU CC-TEE-WHITE, size S. Use the campus-customs MCP tool get_stock_for_sku_and_size to check how many we have in that size and which other sizes are in stock.",
+      "tool_name": "get_stock_for_sku_and_size",
+      "mcp_tool_id": "mcp__campus-customs__get_stock_for_sku_and_size",
+      "arguments": {
+        "sku": "CC-TEE-WHITE",
+        "size": "S"
+      },
+      "tool_output": {
+        "found": true,
+        "requested": {
+          "sku": "CC-TEE-WHITE",
+          "name": "Classic Bulldog Tee",
+          "size": "S",
+          "qty": 0,
+          "location": "Aisle B"
+        },
+        "message": null,
+        "all_sizes": [
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B"
+          }
+        ]
+      },
+      "database_rows": {
+        "inventory": [
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "S",
+            "qty": 0,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "M",
+            "qty": 5,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "L",
+            "qty": 3,
+            "location": "Aisle B"
+          },
+          {
+            "sku": "CC-TEE-WHITE",
+            "name": "Classic Bulldog Tee",
+            "size": "XL",
+            "qty": 2,
+            "location": "Aisle B"
+          }
+        ]
+      },
+      "matches_database": true
+    },
+    {
+      "ticket": 102,
+      "prompt": "Ticket 102: Elm City Properties emailed that shop rent is due in 2 days. Use the campus-customs MCP tool get_rent_due_and_cash_balance for lease 1 to check the rent amount, due date, and whether our cash covers it.",
+      "tool_name": "get_rent_due_and_cash_balance",
+      "mcp_tool_id": "mcp__campus-customs__get_rent_due_and_cash_balance",
+      "arguments": {
+        "lease_id": 1
+      },
+      "tool_output": {
+        "found": true,
+        "lease": {
+          "id": 1,
+          "space_name": "Chapel Street shop",
+          "landlord": "Elm City Properties",
+          "monthly_rent": 2400,
+          "next_due": "2026-09-02",
+          "notes": null
+        },
+        "date_today": "2026-08-31",
+        "days_until_due": 2,
+        "cash_accounts": [
+          {
+            "name": "checking",
+            "balance": 3400,
+            "date": "2026-08-31"
+          }
+        ]
+      },
+      "database_rows": {
+        "leases": [
+          {
+            "id": 1,
+            "space_name": "Chapel Street shop",
+            "landlord": "Elm City Properties",
+            "monthly_rent": 2400.0,
+            "next_due": "2026-09-02",
+            "notes": null
+          }
+        ],
+        "cash_accounts": [
+          {
+            "name": "checking",
+            "balance": 3400.0,
+            "date": "2026-08-31"
+          }
+        ],
+        "desk": [
+          {
+            "date_today": "2026-08-31"
+          }
+        ]
+      },
+      "matches_database": true
+    },
+    {
+      "ticket": 103,
+      "prompt": "Ticket 103: The Yale AI Club wants 20 Basic Hoodie Big Yale, SKU CC-HOOD-NAVY, size M, and is asking for a bulk discount. Use the campus-customs MCP tool get_unit_cost_and_list_price to get the list price and unit cost for that SKU.",
+      "tool_name": "get_unit_cost_and_list_price",
+      "mcp_tool_id": "mcp__campus-customs__get_unit_cost_and_list_price",
+      "arguments": {
+        "sku": "CC-HOOD-NAVY"
+      },
+      "tool_output": {
+        "found": true,
+        "sku": "CC-HOOD-NAVY",
+        "unit_cost": 22,
+        "list_price": 58
+      },
+      "database_rows": {
+        "pricing": [
+          {
+            "sku": "CC-HOOD-NAVY",
+            "unit_cost": 22.0,
+            "list_price": 58.0
+          }
+        ]
+      },
+      "matches_database": true
+    }
+  ]
+}
